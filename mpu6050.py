@@ -1,5 +1,7 @@
 import smbus
 import time
+import numpy as np
+import matplotlib.pyplot as plt
 
 #Program Starting time. For calculating data accept time
 time0 =  time.time()
@@ -50,6 +52,8 @@ DataStorage.write("Time\tAx\tAy\tAz\tT\tGx\tGy\tGz\n")
 #Get period of mining from user (second)
 delaytime = float(raw_input("Data Mining delay : "))
 
+#Setting Some Variables
+
 #Mining
 while(1):
 	try:
@@ -59,7 +63,7 @@ while(1):
 		DataStorage.write(str(round(timeBuffer,3))+"\t")
 
 		#Get some Data and write on txt
-		for i, reg_addr in zip(range(1,7), range(0x3B, 0x47, 2)):
+		for i, reg_addr in zip(range(0,7), range(0x3B, 0x49, 2)):
 			print str(textHeader[i])+str(read_word_2c(reg_addr))+"/",
 			DataStorage.write(str(read_word_2c(reg_addr))+"\t")
 
