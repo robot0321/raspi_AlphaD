@@ -43,30 +43,32 @@ def read_word_2c(reg_addr):
 #Waking Up
 bus.write_byte_data(dev_addr, power_mgmt_1, 0)
 
+#Saving data as text file (renew everytime running)
+DataStorage = open("mpuData.txt", 'w')
+DataStorage.write("Time\tAx\tAy\tAz\tT\tGx\tGy\tGz\n")
+
 #Get period of mining from user (second)
 delaytime = float(raw_input("Data Mining delay : "))
 
 #Mining
 while(1):
 	try:
-		#if you see 'MPU6050 User Guide, there is register address of Accelero, Gyro, etc in Register Map
+		#Mining time
 		timeBuffer = (time.time() - time0)
-		#for i, reg_addr in zip(range(1,7), range(0x3B, 0x47, 2)):
-		#	dataBuffer[i] = read_word_2c(reg_addr)
-		#Ax = read_word_2c(0x3B)
-		#Ay = read_word_2c(0x3D)
-		#Az = read_word_2c(0x3F)
-		#T = read_word_2c(0x41) #Temperature
-		#Gx = read_word_2c(0x43)
-		#Gy = read_word_2c(0x45)
-		#Gz = read_word_2c(0x47)
-	except:
-		print("!!! INS Data reading Err !!!")
+		print "sysCLK : %.3f" %(timeBuffer),
+		DataStorage.write(str(round(timeBuffer,3))+"\t")
 
-	print "sysCLK : ", timeBuffer,
-	for i, reg_addr in zip(range(1,7), range(0x3B, 0x47, 2)):
-		print str(textHeader[i])+str(read_word_2c(reg_addr))+"/",
-	print ""
-	time.sleep(delaytime)
+		#Get some Data and write on txt
+		for i, reg_addr in zip(range(1,7), range(0x3B, 0x47, 2)):
+			print str(textHeader[i])+str(read_word_2c(reg_addr))+"/",
+			DataStorage.write(str(read_word_2c(reg_addr))+"\t")
 
+		print ""
+		DataStorage.write("\n")
+		time.sleep(delaytime)
+
+	except KeyboardInterrupt: #if you put Ctrl-C, close the text file
+		print "\n!!!Keyboard Interrupt raised!!!\n"
+		DataStorage.close()
+		break
 
